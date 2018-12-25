@@ -1,0 +1,108 @@
+# Timi Dayo-Kayode
+# Maxwell Ekechukwu
+# 05/01/2018
+# HW 8
+
+# print Inteface
+
+.section text
+.temps r6, r7
+.zero r0
+
+# checker to track if value being printed is a leading zero or not
+leading:
+.data 0
+not_leading:
+.data 1
+
+# Starts print one number 
+enter_print_num:
+        output ">>> "
+        push r4 on stack r2 
+        r4 := r4 + 3 
+        r4 := r4 + r2
+        r5 := m[r0][r4]
+        if (r5 == r0) goto zeroOutput using r4
+        if (r5 <s r0) goto print_neg using r4
+        r3 := r0
+        goto build_num
+
+# case for zero output
+zeroOutput:
+        output '0'
+        goto endPrintOnedigit
+
+# case for negative outputs
+print_neg:
+        output '-'
+        r4 := 2147483648
+        if (r5 == r4) goto print_max_neg using r4
+        r5 := r5 - 1
+        r5 := ~r5
+        r3 := r0
+        goto build_num
+
+# case for most negative number as output
+print_max_neg:
+        output "2147483648"
+        goto endPrintOnedigit
+
+# putting the digits on the stack in order of significance
+build_num:
+        if (r3 != 32) goto build_num_loop using r4
+        r5 := leading
+        goto print_num
+
+build_num_loop:
+        r3 := r3 + 1
+        r4 := r5 mod 10
+        push r4 on stack r2
+        r5 := r5 / 10 
+        goto build_num
+
+# print digits on the stack
+print_num:
+        if (r3 != r0) goto print_num_loop using r4
+        goto endPrintOnedigit
+
+#print digits excluding leading zeros
+print_num_loop:
+        r3 := r3 - 1
+        if (r5 != leading) goto print_one_digit using r4
+        if (m[r0][r2] != r0) goto change_lead using r4
+        pop stack r2
+        goto print_num
+
+# Prints just one digit from stack as long as it is not a leading zero
+print_one_digit:
+        pop r4 off stack r2
+        r4 := r4 + '0'
+        output r4
+        goto print_num
+
+# Changes state of leading variable and prints the current digit
+change_lead:
+        r5 := not_leading
+        goto print_one_digit
+
+# Loops back to print_all
+endPrintOnedigit:
+        output '\n'
+        pop r4 off stack r2 
+        r4 := r4 + 1
+        goto print_all
+
+# Prints all elements on value stack
+enter_print_all:
+        push r3 on stack r2
+        push r4 on stack r2
+        r3 := m[r0][numvals]
+        r4 := r0 
+
+# This is the print loop 
+print_all:
+        if (r4 != m[r0][numvals]) goto enter_print_num using r5
+endPrintAll:
+        pop r4 off stack r2
+        pop r3 off stack r2
+        goto r1

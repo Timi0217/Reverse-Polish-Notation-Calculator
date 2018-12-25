@@ -1,0 +1,1 @@
+umasm init.ums main.ums calc40.ums print.ums > calc40.um

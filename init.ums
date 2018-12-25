@@ -1,0 +1,84 @@
+# Timi Dayo-Kayode
+# Maxwell Ekechukwu
+# 05/01/2018
+# HW 8
+
+# This initializes the whole program 
+.section init
+.temps r6, r7
+.zero r0
+
+# This allocates space for our table
+.section table
+jumptable:
+.space 256
+
+# This allocates space for our table and marks end of stack
+.section stck
+.space 100000
+endstack:
+
+# This allocates space for our global state variable 
+.section state
+state:
+.space 1
+.section numvals
+numvals:
+.space 1
+
+# This starts our program
+start:
+        r0 := 0
+        r2 := endstack
+        m[r0][state] := waiting
+        m[r0][numvals] := r0
+        goto initialize linking r1
+        goto enter_main linking r1
+        halt
+
+# This intializes our jump table with labels
+initialize:
+        push r1 on stack r2
+        push r4 on stack r2
+        push r3 on stack r2
+        r3 := jumptable
+        r4 := jumptable + 255
+        goto initializeJumptable linking r1
+        r3 := jumptable + '0'
+        r3 := r3 - 1
+        r4 := jumptable + '9'
+        goto initializeDigits linking r1
+        m[r0][jumptable + ' '] := wait
+        m[r0][jumptable + '+'] := addition
+        m[r0][jumptable + '-'] := subtract
+        m[r0][jumptable + '*'] := multiply
+        m[r0][jumptable + '/'] := divide
+        m[r0][jumptable + '|'] := bitwiseOr
+        m[r0][jumptable + '&'] := and
+        m[r0][jumptable + 'c'] := neg
+        m[r0][jumptable + '~'] := not
+        m[r0][jumptable + 's'] := swap
+        m[r0][jumptable + 'd'] := duplicate
+        m[r0][jumptable + 'p'] := remove
+        m[r0][jumptable + 'z'] := clr
+        m[r0][jumptable + '\n'] := print
+        pop r3 off stack r2
+        pop r4 off stack r2
+        pop r1 off stack r2
+        goto r1
+
+# This initializes all entries in our jumptable to input error
+initializeJumptable:
+        r5 := initializeJumptable
+        m[r0][r4] := input_error
+        r4 := r4 - 1
+        if (r4 != r3) goto r5
+        goto r1
+
+# Initialize digit entires to digit label
+initializeDigits:
+        r5 := initializeDigits
+        m[r0][r4] := digits
+        r4 := r4 - 1
+        if (r4 != r3) goto r5
+        goto r1

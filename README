@@ -1,0 +1,25 @@
+Timi Dayo-Kayode(ODAYOK01) and Maxwell Ekechukwu(MEKECH01)
+
+We received help from the TA's and discussed specifications with Favour
+Okerekemba and Josh Tso.
+
+As far as we are aware, we have implemented the RPN Calc in UMASM according to 
+the specifications provided.
+
+We implemented our solution to the problem using 4 modules;
+
+main.ums
+init.ums
+calc40.ums
+print.ums
+
+We also used Norman Ramsey's calling conventions
+
+Our implementation of the print module was completed by building a stack of
+32 digits iteratively. We then printed each digit by popping them from the 
+stack and only outputting the digits that occured after the last leading
+zero
+
+We spend approx. 4 hours analyzing the problem
+We spend approx. 12 hours writing asm code
+We spend approx. 3 hours debugging our RPN Calc

@@ -1,0 +1,321 @@
+# Timi Dayo-Kayode
+# Maxwell Ekechukwu
+# 05/01/2018 
+# HW 8
+
+# command module
+
+.section text
+.temps r6, r7
+.zero r0
+
+# Booleans to keep track of input state
+entering:
+.data 1
+waiting:
+.data 0
+
+# Clears all the values on stack
+clr:
+        m[r0][state] := waiting
+        pop stack r2
+        r2 := r2 + m[r0][numvals]
+        m[r0][numvals] := r0
+        goto r1
+
+# Prints top of a stack
+print:
+        m[r0][state] := waiting
+        pop stack r2
+        goto enter_print_all
+
+# Adds 2 numbers on the stack
+# Calls stack underflow if there are less than 2 digits 
+addition:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r5 + 1
+        r4 := m[r0][r5]
+        r3 := r4 + r3
+        m[r0][r5] := r3
+        r4 := 1
+        m[r0][numvals] := m[r0][numvals] - r4 using r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        goto r1
+
+# Subtracts 2 numbers on the stack
+# Calls stack underflow if there are less than 2 digits 
+subtract:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r5 + 1
+        r4 := m[r0][r5]
+        r3 := r4 - r3
+        m[r0][r5] := r3
+        r4 := 1
+        m[r0][numvals] := m[r0][numvals] - r4 using r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        goto r1
+
+# Multiplies 2 numbers on the stack
+# Calls stack underflow if there are less than 2 digits 
+multiply:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r5 + 1
+        r4 := m[r0][r5]
+        r3 := r4 * r3
+        m[r0][r5] := r3
+        r4 := 1
+        m[r0][numvals] := m[r0][numvals] - r4 using r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        goto r1
+
+#Takes the last two values off the stack and calculates the bitwise or
+# Calls stack underflow if there are less than 2 digits 
+bitwiseOr:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r5 + 1
+        r4 := m[r0][r5]
+        r3 := r4 | r3
+        m[r0][r5] := r3
+        r4 := 1
+        m[r0][numvals] := m[r0][numvals] - r4 using r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        goto r1
+
+#Takes the last two values off the stack and calculates the bitwise an-[zerd
+# Calls stack underflow if there are less than 2 digits 
+and:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r5 + 1
+        r4 := m[r0][r5]
+        r3 := r4 & r3
+        m[r0][r5] := r3
+        r4 := 1
+        m[r0][numvals] := m[r0][numvals] - r4 using r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        goto r1
+
+# Brain of whole division process 
+# Calls stack underflow if there are less than 2 digits 
+# Calls disctinct cases 
+divide:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r2 + 3
+        r4 := m[r0][r5]
+        if (r3 == r0) goto zeroDiv using r5
+        if (r3 <s r0) goto ensureNumerator using r5
+        if (r4 <s r0) goto negandPositive using r5
+        goto postiveAndPositive
+endDivision:
+        r4 := 1
+        m[r0][numvals] := m[r0][numvals] - r4 using r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        goto r1
+ensureNumerator:
+        if (r4 <s r0) goto neg_neg using r5
+postiveAndPositive:
+        r3 := r4 / r3
+        r5 := r2 + 3
+        m[r0][r5] := r3
+        goto endDivision
+positiveAndNeg:
+        r3 := -r3
+        r3 := r4 / r3
+        r3 := -r3
+        r5 := r2 + 3
+        m[r0][r5] := r3
+        goto endDivision
+negandPositive:
+        r4 := -r4
+        r3 := r4 / r3
+        r3 := -r3
+        r5 := r2 + 3
+        m[r0][r5] := r3
+        goto endDivision
+neg_neg:
+        r3 := -r3
+        r4 := -r4
+        goto postiveAndPositive
+
+# Condition for zero division
+zeroDiv:
+        pop r4 off stack r2
+        pop r3 off stack r2
+        output "Division by zero\n"
+        goto r1
+
+# Reads and stores a new digit
+new_digit:
+        pop r4 off stack r2
+        pop r3 off stack r2
+        m[r0][state] := entering
+        r5 := 1 + m[r0][numvals]
+        m[r0][numvals] := r5
+        pop r5 off stack r2
+        r5 := r5 - '0'
+        push r5 on stack r2
+        goto r1
+
+# Reads and appends a digit
+append_digit:
+        r5 := m[r0][r2 + 2]
+        r5 := r5 - '0'
+        r3 := m[r0][r2 + 3]
+        r3 := r3 * 10
+        r5 := r3 + r5
+        pop r4 off stack r2
+        pop r3 off stack r2
+        pop stack r2
+        pop stack r2
+        push r5 on stack r2
+        goto r1
+# Sets to waiting state
+wait:
+        m[r0][state] := waiting
+        pop stack r2
+        goto r1
+
+# 2's complement
+neg:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 1
+        if (m[r0][numvals] <s r5) goto errMsg1 using r5
+        r5 := m[r0][r2]
+        r5 := -r5
+        m[r0][r2] := r5
+        goto r1
+
+# Bitwise complement
+not:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 1
+        if (m[r0][numvals] <s r5) goto errMsg1 using r5
+        r5 := m[r0][r2]
+        r5 := ~r5
+        m[r0][r2] := r5
+        goto r1
+
+# Swaps 2 numbers on the stack
+# Calls stack underflow if there are less than 2 digits 
+swap:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 2
+        if (m[r0][numvals] <s r5) goto errMsg2 using r5
+        push r3 on stack r2
+        push r4 on stack r2
+        r5 := r2 + 2
+        r3 := m[r0][r5]
+        r5 := r5 + 1
+        r4 := m[r0][r5]
+        m[r0][r5] := r3
+        r5 := r5 - 1
+        m[r0][r5] := r4
+        pop r4 off stack r2
+        pop r3 off stack r2
+        goto r1
+
+# duplicates the value at the top of the stack
+# Calls stack underflow(errMsg1) if there are less than 1 digit 
+duplicate:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 1
+        if (m[r0][numvals] <s r5) goto errMsg1 using r5
+        r5 := m[r0][r2]
+        push r5 on stack r2
+        r5 := m[r0][numvals] + 1
+        m[r0][numvals] := r5
+        goto r1
+
+# Removes value at top of the stack
+# Calls stack underflow(errMsg1) if there are less than 1 digit 
+remove:
+        m[r0][state] := waiting
+        pop stack r2
+        r5 := 1
+        if (m[r0][numvals] <s r5) goto errMsg1 using r5
+        pop stack r2
+        r5 := 1
+        r5 := m[r0][numvals] - r5
+        m[r0][numvals] := r5
+        goto r1
+
+errMsg1:
+        output "Underlow, Expected at least 1 value\n"
+        goto r1
+errMsg2:
+        output "Underflow, expected at least 2 values\n"
+        goto r1
+
+# Processes digits  
+input_error:
+        m[r0][state] := waiting
+        output "Unknown character \'"
+        output m[r0][r2]
+        output "\'\n"
+        pop stack r2
+        goto r1
+
+digits:
+        push r3 on stack r2
+        push r4 on stack r2
+        r3 := new_digit
+        r4 := entering
+        if (m[r0][state] != r4) goto r3 using r5
+        goto append_digit
